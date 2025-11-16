@@ -1,0 +1,89 @@
+"use client"
+
+import { BombIcon } from "../icons/bomb"
+import { FlagIcon } from "../icons/flag"
+
+type CellType = {
+  value: number
+  i: number
+  j: number
+}
+
+interface CellProps {
+  cell: CellType
+  isOpened: boolean
+  isMarked: boolean
+  openCell: (coord: number[]) => void
+  handleMarkCell: ([i, j]: number[]) => void
+}
+
+const numberColors: Record<number, string> = {
+  1: "text-blue-600",
+  2: "text-green-600",
+  3: "text-red-600",
+  4: "text-purple-600",
+  5: "text-yellow-600",
+  6: "text-teal-600",
+  7: "text-pink-600",
+  8: "text-gray-600",
+  [-1]: "bg-red-800",
+}
+
+const backgroundColors: Record<number, string> = {
+  0: "bg-zinc-800",
+  1: "bg-zinc-800",
+  2: "bg-zinc-800",
+  3: "bg-zinc-800",
+  4: "bg-zinc-800",
+  5: "bg-zinc-800",
+  6: "bg-zinc-800",
+  7: "bg-zinc-800",
+  8: "bg-zinc-800",
+  [-1]: "bg-red-900",
+}
+
+export function Cell({
+  cell,
+  isOpened,
+  isMarked,
+  openCell,
+  handleMarkCell,
+}: CellProps) {
+  if (isOpened) {
+    return (
+      <div
+        className={`w-8 h-8 flex text-center justify-center items-center select-none bg-zinc-900 box-border aspect-square ring-1 ring-inset ring-zinc-700  ${
+          backgroundColors[cell.value] || "bg-zinc-900"
+        }`}
+      >
+        {cell.value === -1 ? (
+          <BombIcon width={20} height={20} />
+        ) : (
+          <p
+            className={`text-center flex items-center justify-center h-full font-medium ${
+              numberColors[cell.value] || "text-zinc-50"
+            }
+              `}
+          >
+            {cell.value === 0 ? "" : cell.value}
+          </p>
+        )}
+      </div>
+    )
+  }
+
+  return (
+    <div>
+      <button
+        onClick={() => openCell([cell.i, cell.j])}
+        onContextMenu={(e) => {
+          e.preventDefault() // impede o menu do navegador
+          handleMarkCell([cell.i, cell.j])
+        }}
+        className="flex w-8 h-8 bg-zinc-300 cursor-pointer box-border aspect-square ring-1 ring-inset ring-zinc-500"
+      >
+        {isMarked ? <FlagIcon width={20} height={20} /> : ""}
+      </button>
+    </div>
+  )
+}
