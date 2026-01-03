@@ -1,18 +1,26 @@
-import { Dispatch, RefObject, SetStateAction, useRef, useState } from "react"
+import {
+  Dispatch,
+  RefObject,
+  SetStateAction,
+  useEffect,
+  useEffectEvent,
+  useRef,
+  useState,
+} from "react"
 
-type BoardDifficulty = "easy" | "medium" | "hard"
+export type BoardDifficulty = "easy" | "medium" | "hard"
 
 const boardStats = {
   "easy": {
     numberOfBombs: 5,
-    size: 5,
+    size: 7,
   },
   "medium": {
-    numberOfBombs: 15,
+    numberOfBombs: 8,
     size: 7,
   },
   "hard": {
-    numberOfBombs: 20,
+    numberOfBombs: 12,
     size: 9,
   },
   "test": {
@@ -30,6 +38,7 @@ export function useBoard(difficulty: BoardDifficulty) {
   const openedCount = useRef(0)
 
   const stats = boardStats[difficulty]
+  console.log(difficulty, stats)
 
   function openCell(coord: number[]) {
     const [i, j] = coord
@@ -42,8 +51,9 @@ export function useBoard(difficulty: BoardDifficulty) {
 
       if (win) return
 
-      if (board?.[i]?.[j] === undefined || opened[key] || stop || marked[key])
+      if (board?.[i]?.[j] === undefined || opened[key] || stop || marked[key]) {
         return //não existe essa coordenada
+      }
       if (visited.has(key)) return
       visited.add(key)
 
@@ -99,21 +109,11 @@ export function useBoard(difficulty: BoardDifficulty) {
 
   function resetGame() {
     setWin(null)
-    setOpened((opened) => {
-      const newOpened: Record<string, boolean> = {}
-      for (const objectKey in opened) {
-        newOpened[objectKey] = false
-      }
-      return newOpened
-    })
-    setMarked((marked) => {
-      const newMarked: Record<string, boolean> = {}
-      for (const objectKey in marked) {
-        newMarked[objectKey] = false
-      }
-      return newMarked
-    })
-    setBoard(() => generateBoard(difficulty))
+    setIsEndGame(false)
+    setOpened(generateOpenedCells(difficulty))
+    setMarked(generateMarkedCells(difficulty))
+    setBoard(generateBoard(difficulty))
+
     openedCount.current = 0
   }
 
@@ -122,6 +122,17 @@ export function useBoard(difficulty: BoardDifficulty) {
       return { ...marked, [`${i}-${j}`]: !marked[`${i}-${j}`] }
     })
   }
+
+  const handleDificultyChange = useEffectEvent(() => {
+    const newBoard = generateBoard(difficulty)
+
+    setBoard(newBoard)
+    resetGame()
+  })
+
+  useEffect(() => {
+    handleDificultyChange()
+  }, [difficulty])
 
   return {
     board,
@@ -201,7 +212,7 @@ function generateOpenedCells(difficulty: BoardDifficulty) {
       openList[`${i}-${j}`] = false
     }
   }
-
+  console.log("sizeeee", size)
   return openList
 }
 

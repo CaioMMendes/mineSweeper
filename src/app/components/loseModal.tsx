@@ -22,6 +22,7 @@ export function LoseModal({ win, isEndGame }: LoseModalProps) {
 
   useEffect(() => {
     audioRef.current = new Audio("/explosion.mp3")
+    audioRef.current.volume = 0.5
   }, [])
 
   useEffect(() => {

@@ -19,6 +19,7 @@ export function VictoryModal({ win }: VictoryModalProps) {
   })
   useEffect(() => {
     audioRef.current = new Audio("/victory.mp3")
+    audioRef.current.volume = 0.5
   }, [])
 
   useEffect(() => {
