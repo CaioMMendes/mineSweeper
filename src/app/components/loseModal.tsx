@@ -1,5 +1,6 @@
 import { useEffect, useEffectEvent, useRef, useState } from "react"
 import { Modal } from "./modal"
+import useVolumeStore from "../stores/volume-store"
 
 interface LoseModalProps {
   win: boolean | null
@@ -8,6 +9,7 @@ interface LoseModalProps {
 
 export function LoseModal({ win, isEndGame }: LoseModalProps) {
   const [loseModalOpen, setLoseModalOpen] = useState(false)
+  const { volume } = useVolumeStore()
 
   const audioRef = useRef<HTMLAudioElement | null>(null)
 
@@ -22,8 +24,12 @@ export function LoseModal({ win, isEndGame }: LoseModalProps) {
 
   useEffect(() => {
     audioRef.current = new Audio("/explosion.mp3")
-    audioRef.current.volume = 0.5
   }, [])
+
+  useEffect(() => {
+    if (!audioRef.current) return
+    audioRef.current.volume = volume
+  }, [volume])
 
   useEffect(() => {
     openModal()

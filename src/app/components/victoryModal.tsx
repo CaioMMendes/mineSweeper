@@ -1,5 +1,6 @@
 import { useEffect, useEffectEvent, useRef, useState } from "react"
 import { Modal } from "./modal"
+import useVolumeStore from "../stores/volume-store"
 
 interface VictoryModalProps {
   win: boolean | null
@@ -7,6 +8,7 @@ interface VictoryModalProps {
 
 export function VictoryModal({ win }: VictoryModalProps) {
   const [victoryModalOpen, setVictoryModalOpen] = useState(false)
+  const { volume } = useVolumeStore()
   const audioRef = useRef<HTMLAudioElement | null>(null)
 
   const openModal = useEffectEvent(() => {
@@ -19,8 +21,12 @@ export function VictoryModal({ win }: VictoryModalProps) {
   })
   useEffect(() => {
     audioRef.current = new Audio("/victory.mp3")
-    audioRef.current.volume = 0.5
   }, [])
+
+  useEffect(() => {
+    if (!audioRef.current) return
+    audioRef.current.volume = volume
+  }, [volume])
 
   useEffect(() => {
     openModal()
