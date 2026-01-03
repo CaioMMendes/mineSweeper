@@ -12,6 +12,10 @@ const boardStats = {
     size: 7,
   },
   "hard": {
+    numberOfBombs: 20,
+    size: 9,
+  },
+  "test": {
     numberOfBombs: 2,
     size: 9,
   },
@@ -33,7 +37,6 @@ export function useBoard(difficulty: BoardDifficulty) {
     let stop = false
 
     open([i, j])
-    //todo tem que ver se o numero de elementos abertos é o mesmo do numero de elementos menos as bombas para ver a vitoria
     function open([i, j]: number[]) {
       const key = `${i}-${j}`
 
