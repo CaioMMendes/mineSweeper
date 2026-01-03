@@ -49,6 +49,10 @@ export function Cell({
   openCell,
   handleMarkCell,
 }: CellProps) {
+  function handleClick() {
+    if (!isMarked) openCell([cell.i, cell.j])
+  }
+
   if (isOpened) {
     return (
       <div
@@ -75,12 +79,14 @@ export function Cell({
   return (
     <div>
       <button
-        onClick={() => openCell([cell.i, cell.j])}
+        onClick={() => handleClick()}
         onContextMenu={(e) => {
           e.preventDefault() // impede o menu do navegador
           handleMarkCell([cell.i, cell.j])
         }}
-        className="flex w-8 h-8 bg-zinc-300 cursor-pointer box-border aspect-square ring-1 ring-inset ring-zinc-500"
+        className={
+          "flex w-8 h-8 items-center justify-center bg-zinc-300 cursor-pointer box-border aspect-square ring-1 ring-inset ring-zinc-500"
+        }
       >
         {isMarked ? <FlagIcon width={20} height={20} /> : ""}
       </button>
