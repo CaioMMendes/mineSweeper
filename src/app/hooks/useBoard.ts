@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { Dispatch, RefObject, SetStateAction, useRef, useState } from "react"
 
 type BoardDifficulty = "easy" | "medium" | "hard"
 
@@ -12,7 +12,7 @@ const boardStats = {
     size: 7,
   },
   "hard": {
-    numberOfBombs: 10,
+    numberOfBombs: 2,
     size: 9,
   },
 }
@@ -22,6 +22,10 @@ export function useBoard(difficulty: BoardDifficulty) {
   const [opened, setOpened] = useState(() => generateOpenedCells(difficulty))
   const [marked, setMarked] = useState(() => generateMarkedCells(difficulty))
   const [isEndGame, setIsEndGame] = useState(false)
+  const [win, setWin] = useState<boolean | null>(null)
+  const openedCount = useRef(0)
+
+  const stats = boardStats[difficulty]
 
   function openCell(coord: number[]) {
     const [i, j] = coord
@@ -29,17 +33,21 @@ export function useBoard(difficulty: BoardDifficulty) {
     let stop = false
 
     open([i, j])
-
+    //todo tem que ver se o numero de elementos abertos é o mesmo do numero de elementos menos as bombas para ver a vitoria
     function open([i, j]: number[]) {
       const key = `${i}-${j}`
 
+      if (win) return
+
+      if (board?.[i]?.[j] === undefined || opened[key] || stop || marked[key])
+        return //não existe essa coordenada
       if (visited.has(key)) return
       visited.add(key)
-      if (board?.[i]?.[j] === undefined || opened[key] || stop) return //não existe essa coordenada
 
       if (board[i][j] === -1) {
         stop = true
         setIsEndGame(true)
+        setWin(false)
         setOpened((opened) => {
           const newOpened: Record<string, boolean> = {}
           for (const objectKey in opened) {
@@ -50,15 +58,30 @@ export function useBoard(difficulty: BoardDifficulty) {
 
         return
       }
+      openedCount.current++
       if (board[i][j] !== 0) {
         setOpened((opened) => {
           return { ...opened, [key]: true }
         })
+        checkWin(
+          stats.numberOfBombs,
+          stats.size,
+          openedCount,
+          setIsEndGame,
+          setWin
+        )
         return
       }
       setOpened((opened) => {
         return { ...opened, [key]: true }
       })
+      checkWin(
+        stats.numberOfBombs,
+        stats.size,
+        openedCount,
+        setIsEndGame,
+        setWin
+      )
 
       open([i + 1, j])
       open([i - 1, j])
@@ -72,6 +95,7 @@ export function useBoard(difficulty: BoardDifficulty) {
   }
 
   function resetGame() {
+    setWin(null)
     setOpened((opened) => {
       const newOpened: Record<string, boolean> = {}
       for (const objectKey in opened) {
@@ -87,6 +111,7 @@ export function useBoard(difficulty: BoardDifficulty) {
       return newMarked
     })
     setBoard(() => generateBoard(difficulty))
+    openedCount.current = 0
   }
 
   function handleMarkCell([i, j]: number[]) {
@@ -103,6 +128,7 @@ export function useBoard(difficulty: BoardDifficulty) {
     resetGame,
     marked,
     handleMarkCell,
+    win,
   }
 }
 
@@ -187,6 +213,20 @@ function generateMarkedCells(difficulty: BoardDifficulty) {
   }
 
   return markedList
+}
+
+function checkWin(
+  numberOfBombs: number,
+  size: number,
+  openedCount: RefObject<number>,
+  setIsEndGame: Dispatch<SetStateAction<boolean>>,
+  setWin: Dispatch<SetStateAction<boolean | null>>
+) {
+  if (numberOfBombs === size ** 2 - openedCount.current) {
+    setIsEndGame(true)
+    setWin(true)
+    return
+  }
 }
 
 //todo fazer quando perde
