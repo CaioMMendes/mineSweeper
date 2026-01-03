@@ -1,4 +1,4 @@
-import { useEffect, useEffectEvent, useState } from "react"
+import { useEffect, useEffectEvent, useRef, useState } from "react"
 import { Modal } from "./modal"
 
 interface LoseModalProps {
@@ -9,15 +9,26 @@ interface LoseModalProps {
 export function LoseModal({ win, isEndGame }: LoseModalProps) {
   const [loseModalOpen, setLoseModalOpen] = useState(false)
 
+  const audioRef = useRef<HTMLAudioElement | null>(null)
+
   const openModal = useEffectEvent(() => {
     if (win === false && loseModalOpen === false && isEndGame === true) {
       setLoseModalOpen(true)
+      audioRef.current?.play().catch((error) => {
+        console.log("error: ", error)
+      })
     }
   })
 
   useEffect(() => {
+    audioRef.current = new Audio("/explosion.mp3")
+  }, [])
+
+  useEffect(() => {
     openModal()
   }, [win])
+
+  useEffect(() => {}, [])
 
   return (
     <>

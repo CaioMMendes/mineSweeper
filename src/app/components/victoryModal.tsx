@@ -1,4 +1,4 @@
-import { useEffect, useEffectEvent, useState } from "react"
+import { useEffect, useEffectEvent, useRef, useState } from "react"
 import { Modal } from "./modal"
 
 interface VictoryModalProps {
@@ -7,12 +7,19 @@ interface VictoryModalProps {
 
 export function VictoryModal({ win }: VictoryModalProps) {
   const [victoryModalOpen, setVictoryModalOpen] = useState(false)
+  const audioRef = useRef<HTMLAudioElement | null>(null)
 
   const openModal = useEffectEvent(() => {
     if (win === true && victoryModalOpen === false) {
       setVictoryModalOpen(true)
+      audioRef.current?.play().catch((error) => {
+        console.log("error: ", error)
+      })
     }
   })
+  useEffect(() => {
+    audioRef.current = new Audio("/victory.mp3")
+  }, [])
 
   useEffect(() => {
     openModal()
