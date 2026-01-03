@@ -1,5 +1,6 @@
 import { ReactNode } from "react"
 import { cn } from "../utils/cn"
+import { motion } from "framer-motion"
 
 type ModalProps = {
   open: boolean
@@ -18,17 +19,25 @@ export function Modal({ open, onClose, children, className }: ModalProps) {
 
   return (
     <div
-      className="fixed inset-0 bg-black/60 flex items-center justify-center z-50"
+      className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-5"
       onClick={handleOutsideClick}
     >
-      <div
-        className={cn(
-          "bg-zinc-700 rounded-xl p-8 shadow-xl max-w-lg w-full",
-          className
-        )}
+      <motion.div
+        initial={{ opacity: 0, scale: 0 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{
+          duration: 0.4,
+        }}
       >
-        {children}
-      </div>
+        <div
+          className={cn(
+            "bg-zinc-700 rounded-xl p-8 shadow-xl max-w-lg w-full",
+            className
+          )}
+        >
+          {children}
+        </div>
+      </motion.div>
     </div>
   )
 }

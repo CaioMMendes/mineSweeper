@@ -12,20 +12,24 @@ export type BoardDifficulty = "easy" | "medium" | "hard"
 
 const boardStats = {
   "easy": {
-    numberOfBombs: 5,
-    size: 7,
+    numberOfBombs: 3,
+    size: 5,
+    time: 120,
   },
   "medium": {
-    numberOfBombs: 8,
+    numberOfBombs: 7,
     size: 7,
+    time: 300,
   },
   "hard": {
-    numberOfBombs: 12,
+    numberOfBombs: 14,
     size: 9,
+    time: 480,
   },
   "test": {
     numberOfBombs: 2,
     size: 9,
+    time: 200,
   },
 }
 

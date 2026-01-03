@@ -2,6 +2,7 @@
 
 import { BombIcon } from "../icons/bomb"
 import { FlagIcon } from "../icons/flag"
+import { motion } from "framer-motion"
 
 type CellType = {
   value: number
@@ -55,7 +56,10 @@ export function Cell({
 
   if (isOpened) {
     return (
-      <div
+      <motion.div
+        initial={{ scale: 0.85, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 0.2, ease: "easeOut" }}
         className={`w-8 h-8 flex text-center justify-center items-center select-none bg-zinc-900 box-border aspect-square ring-1 ring-inset ring-zinc-700  ${
           backgroundColors[cell.value] || "bg-zinc-900"
         }`}
@@ -72,7 +76,7 @@ export function Cell({
             {cell.value === 0 ? "" : cell.value}
           </p>
         )}
-      </div>
+      </motion.div>
     )
   }
 
