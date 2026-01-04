@@ -5,6 +5,7 @@ import { Button } from "./button"
 import { Cell } from "./cell"
 import { LoseModal } from "./loseModal"
 import { VictoryModal } from "./victoryModal"
+import { formatTimeMinSeconds } from "../utils/formatTimeMinSeconds"
 
 export function Board() {
   const [dificulty, setDificulty] = useState<BoardDifficulty>("medium")
@@ -18,7 +19,10 @@ export function Board() {
     handleMarkCell,
     win,
     isEndGame,
+    timeLeft,
+    usedTime,
   } = useBoard(dificulty)
+  const { min, seconds } = formatTimeMinSeconds(timeLeft)
 
   const colsClass: Record<number, string> = {
     5: "grid-cols-5",
@@ -43,6 +47,11 @@ export function Board() {
       <div className="flex w-full justify-center">
         <Button onClick={resetGame}>Reiniciar</Button>
       </div>
+
+      <div className="flex">
+        <p>{min}</p>:
+        <p className="min-w-6">{seconds < 10 ? `0${seconds}` : seconds}</p>
+      </div>
       <div
         className={cn(
           `grid ${colClass} w-fit mx-auto gap-0 p-0 bg-zinc-900 ring-1 ring-zinc-700 mt-5 rounded-sm overflow-hidden`,
@@ -65,7 +74,7 @@ export function Board() {
           })
         })}
       </div>
-      <VictoryModal win={win} />
+      <VictoryModal win={win} usedTime={usedTime} />
       <LoseModal isEndGame={isEndGame} win={win} />
     </main>
   )

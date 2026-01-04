@@ -7,6 +7,7 @@ import {
   useRef,
   useState,
 } from "react"
+import { useTimer } from "./useTimer"
 
 export type BoardDifficulty = "easy" | "medium" | "hard"
 
@@ -29,11 +30,14 @@ const boardStats = {
   "test": {
     numberOfBombs: 2,
     size: 9,
-    time: 200,
+    time: 5,
   },
 }
 
 export function useBoard(difficulty: BoardDifficulty) {
+  const { resetTimer, startTimer, timeLeft, pauseTimer, usedTime } = useTimer(
+    boardStats[difficulty].time
+  )
   const [board, setBoard] = useState(() => generateBoard(difficulty))
   const [opened, setOpened] = useState(() => generateOpenedCells(difficulty))
   const [marked, setMarked] = useState(() => generateMarkedCells(difficulty))
@@ -50,6 +54,7 @@ export function useBoard(difficulty: BoardDifficulty) {
     let stop = false
 
     open([i, j])
+
     function open([i, j]: number[]) {
       const key = `${i}-${j}`
 
@@ -63,18 +68,11 @@ export function useBoard(difficulty: BoardDifficulty) {
 
       if (board[i][j] === -1) {
         stop = true
-        setIsEndGame(true)
-        setWin(false)
-        setOpened((opened) => {
-          const newOpened: Record<string, boolean> = {}
-          for (const objectKey in opened) {
-            newOpened[objectKey] = true
-          }
-          return newOpened
-        })
+        gameOver()
 
         return
       }
+      if (openedCount.current === 0) startTimer()
       openedCount.current++
       if (board[i][j] !== 0) {
         setOpened((opened) => {
@@ -85,7 +83,8 @@ export function useBoard(difficulty: BoardDifficulty) {
           stats.size,
           openedCount,
           setIsEndGame,
-          setWin
+          setWin,
+          pauseTimer
         )
         return
       }
@@ -97,7 +96,8 @@ export function useBoard(difficulty: BoardDifficulty) {
         stats.size,
         openedCount,
         setIsEndGame,
-        setWin
+        setWin,
+        pauseTimer
       )
 
       open([i + 1, j])
@@ -117,6 +117,7 @@ export function useBoard(difficulty: BoardDifficulty) {
     setOpened(generateOpenedCells(difficulty))
     setMarked(generateMarkedCells(difficulty))
     setBoard(generateBoard(difficulty))
+    resetTimer()
 
     openedCount.current = 0
   }
@@ -125,6 +126,23 @@ export function useBoard(difficulty: BoardDifficulty) {
     setMarked((marked) => {
       return { ...marked, [`${i}-${j}`]: !marked[`${i}-${j}`] }
     })
+  }
+
+  function handleOpenEveryCells() {
+    setOpened((opened) => {
+      const newOpened: Record<string, boolean> = {}
+      for (const objectKey in opened) {
+        newOpened[objectKey] = true
+      }
+      return newOpened
+    })
+  }
+
+  function gameOver() {
+    setIsEndGame(true)
+    setWin(false)
+    handleOpenEveryCells()
+    pauseTimer()
   }
 
   const handleDificultyChange = useEffectEvent(() => {
@@ -138,6 +156,13 @@ export function useBoard(difficulty: BoardDifficulty) {
     handleDificultyChange()
   }, [difficulty])
 
+  useEffect(() => {
+    if (timeLeft <= 0 && !isEndGame) {
+      gameOver()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [timeLeft, isEndGame])
+
   return {
     board,
     opened,
@@ -147,6 +172,9 @@ export function useBoard(difficulty: BoardDifficulty) {
     marked,
     handleMarkCell,
     win,
+    gameOver,
+    timeLeft,
+    usedTime,
   }
 }
 
@@ -238,14 +266,13 @@ function checkWin(
   size: number,
   openedCount: RefObject<number>,
   setIsEndGame: Dispatch<SetStateAction<boolean>>,
-  setWin: Dispatch<SetStateAction<boolean | null>>
+  setWin: Dispatch<SetStateAction<boolean | null>>,
+  pauseTimer: () => void
 ) {
   if (numberOfBombs === size ** 2 - openedCount.current) {
     setIsEndGame(true)
     setWin(true)
+    pauseTimer()
     return
   }
 }
-
-//todo fazer quando perde
-//todo fazer verificação se a pessoa ganhou
