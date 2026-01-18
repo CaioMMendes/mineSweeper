@@ -16,17 +16,17 @@ export type BoardDifficulty = "easy" | "medium" | "hard"
 
 const boardStats = {
   "easy": {
-    numberOfBombs: 3,
+    numberOfBombs: 4,
     size: 5,
     time: 120,
   },
   "medium": {
-    numberOfBombs: 7,
+    numberOfBombs: 8,
     size: 7,
     time: 300,
   },
   "hard": {
-    numberOfBombs: 14,
+    numberOfBombs: 15,
     size: 9,
     time: 480,
   },
@@ -41,7 +41,11 @@ export function useBoard(difficulty: BoardDifficulty) {
   const { resetTimer, startTimer, timeLeft, pauseTimer, usedTime } = useTimer(
     boardStats[difficulty].time
   )
-  const [board, setBoard] = useState(() => generateBoard(difficulty))
+  const [board, setBoard] = useState(() =>
+    generateEmptyBord(boardStats[difficulty].size)
+  )
+  const firstClick = useRef<number[] | null>(null)
+  const [shouldGenerateBoard, setShouldGenerateBoard] = useState(true)
   const [opened, setOpened] = useState(() => generateOpenedCells(difficulty))
   const [marked, setMarked] = useState(() => generateMarkedCells(difficulty))
   const [isEndGame, setIsEndGame] = useState(false)
@@ -51,7 +55,17 @@ export function useBoard(difficulty: BoardDifficulty) {
   const stats = boardStats[difficulty]
 
   function openCell(coord: number[]) {
-    const [i, j] = coord
+    if (shouldGenerateBoard) {
+      firstClick.current = coord
+      setBoard(generateBoard(difficulty, coord))
+      setShouldGenerateBoard(false)
+      return
+    }
+
+    openFromCoord(coord)
+  }
+
+  function openFromCoord([i, j]: number[]) {
     const visited = new Set<string>()
     let stop = false
 
@@ -61,38 +75,22 @@ export function useBoard(difficulty: BoardDifficulty) {
       const key = `${i}-${j}`
 
       if (win) return
-
-      if (board?.[i]?.[j] === undefined || opened[key] || stop || marked[key]) {
-        return //não existe essa coordenada
-      }
+      if (board?.[i]?.[j] === undefined || opened[key] || stop || marked[key])
+        return
       if (visited.has(key)) return
       visited.add(key)
 
       if (board[i][j] === -1) {
         stop = true
         gameOver()
-
         return
       }
+
       if (openedCount.current === 0) startTimer()
       openedCount.current++
-      if (board[i][j] !== 0) {
-        setOpened((opened) => {
-          return { ...opened, [key]: true }
-        })
-        checkWin(
-          stats.numberOfBombs,
-          stats.size,
-          openedCount,
-          setIsEndGame,
-          setWin,
-          pauseTimer
-        )
-        return
-      }
-      setOpened((opened) => {
-        return { ...opened, [key]: true }
-      })
+
+      setOpened((o) => ({ ...o, [key]: true }))
+
       checkWin(
         stats.numberOfBombs,
         stats.size,
@@ -101,6 +99,8 @@ export function useBoard(difficulty: BoardDifficulty) {
         setWin,
         pauseTimer
       )
+
+      if (board[i][j] !== 0) return
 
       open([i + 1, j])
       open([i - 1, j])
@@ -118,7 +118,9 @@ export function useBoard(difficulty: BoardDifficulty) {
     setIsEndGame(false)
     setOpened(generateOpenedCells(difficulty))
     setMarked(generateMarkedCells(difficulty))
-    setBoard(generateBoard(difficulty))
+    setShouldGenerateBoard(true)
+    setBoard(generateEmptyBord(boardStats[difficulty].size))
+    // setBoard(generateBoard(difficulty))
     resetTimer()
 
     openedCount.current = 0
@@ -148,9 +150,9 @@ export function useBoard(difficulty: BoardDifficulty) {
   }
 
   const handleDificultyChange = useEffectEvent(() => {
-    const newBoard = generateBoard(difficulty)
+    // const newBoard = generateBoard(difficulty)
 
-    setBoard(newBoard)
+    // setBoard(newBoard)
     resetGame()
   })
 
@@ -164,6 +166,14 @@ export function useBoard(difficulty: BoardDifficulty) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timeLeft, isEndGame])
+
+  useEffect(() => {
+    if (!shouldGenerateBoard && firstClick.current) {
+      openFromCoord(firstClick.current)
+      firstClick.current = null
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [board])
 
   return {
     board,
@@ -180,9 +190,7 @@ export function useBoard(difficulty: BoardDifficulty) {
   }
 }
 
-function generateBoard(difficulty: BoardDifficulty) {
-  const { numberOfBombs, size } = boardStats[difficulty]
-
+function generateEmptyBord(size: number) {
   const board: number[][] = []
   for (let i = 0; i < size; i++) {
     const array = []
@@ -191,11 +199,18 @@ function generateBoard(difficulty: BoardDifficulty) {
     }
     board.push(array)
   }
+  return board
+}
+
+function generateBoard(difficulty: BoardDifficulty, coord: number[]) {
+  const { numberOfBombs, size } = boardStats[difficulty]
+
+  const board = generateEmptyBord(size)
 
   let count = 0
   while (count < numberOfBombs) {
     const [x, y] = randomCoordenate(size)
-    if (board[x][y] === -1) continue
+    if (board[x][y] === -1 || isOnFirstClickRange([x, y], coord)) continue
 
     board[x][y] = -1
     count++
@@ -247,6 +262,11 @@ function generateOpenedCells(difficulty: BoardDifficulty) {
     }
   }
   return openList
+}
+
+//todo não ta explodindo mais de primeira, mas não ta com tudo em volta vazio
+function isOnFirstClickRange(cell: number[], coord: number[]) {
+  return Math.abs(cell[0] - coord[0]) <= 1 && Math.abs(cell[1] - coord[1]) <= 1
 }
 
 function generateMarkedCells(difficulty: BoardDifficulty) {
