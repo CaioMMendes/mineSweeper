@@ -33,7 +33,7 @@ export function Board() {
   const handleBoardContextMenu = (e: React.MouseEvent) => {
     e.preventDefault() // bloqueia menu direito global
   }
-  console.log(board.length)
+
   return (
     <main className="flex flex-col mx-auto gap-4  items-center justify-center">
       <div className="flex flex-col w-full justify-center items-center gap-2">

@@ -11,6 +11,9 @@ import { useTimer } from "./useTimer"
 
 export type BoardDifficulty = "easy" | "medium" | "hard"
 
+//todo teria que gerar o board depois que a pessoa clica
+//todo e ai todos os quadrados em volta teriam que ser vazios pra abrir um espaço e ter como a pessoa jogar de boa
+
 const boardStats = {
   "easy": {
     numberOfBombs: 3,
@@ -46,7 +49,6 @@ export function useBoard(difficulty: BoardDifficulty) {
   const openedCount = useRef(0)
 
   const stats = boardStats[difficulty]
-  console.log(difficulty, stats)
 
   function openCell(coord: number[]) {
     const [i, j] = coord
@@ -244,7 +246,6 @@ function generateOpenedCells(difficulty: BoardDifficulty) {
       openList[`${i}-${j}`] = false
     }
   }
-  console.log("sizeeee", size)
   return openList
 }
 
