@@ -11,9 +11,6 @@ import { useTimer } from "./useTimer"
 
 export type BoardDifficulty = "easy" | "medium" | "hard"
 
-//todo teria que gerar o board depois que a pessoa clica
-//todo e ai todos os quadrados em volta teriam que ser vazios pra abrir um espaço e ter como a pessoa jogar de boa
-
 const boardStats = {
   "easy": {
     numberOfBombs: 4,
@@ -264,7 +261,6 @@ function generateOpenedCells(difficulty: BoardDifficulty) {
   return openList
 }
 
-//todo não ta explodindo mais de primeira, mas não ta com tudo em volta vazio
 function isOnFirstClickRange(cell: number[], coord: number[]) {
   return Math.abs(cell[0] - coord[0]) <= 1 && Math.abs(cell[1] - coord[1]) <= 1
 }
