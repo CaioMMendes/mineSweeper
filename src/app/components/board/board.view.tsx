@@ -1,42 +1,28 @@
-import { useState } from "react"
-import { useBoard } from "../hooks/useBoard/useBoard"
-import { cn } from "../utils/cn"
-import { Button } from "./button"
-import { Cell } from "./cell"
-import { LoseModal } from "./loseModal"
-import { VictoryModal } from "./victoryModal"
-import { formatTimeMinSeconds } from "../utils/formatTimeMinSeconds"
-import { BoardDifficulty } from "../hooks/useBoard/types/boardTypes"
+"use-client"
 
-export function Board() {
-  const [dificulty, setDificulty] = useState<BoardDifficulty>("medium")
+import { cn } from "@/app/utils/cn"
+import { Button } from "../button"
+import { Cell } from "../cell"
+import { LoseModal } from "../loseModal"
+import { VictoryModal } from "../victoryModal"
+import { BoardViewProps } from "./board.types"
 
-  //todo colocar para pegar a dificuldade pela url, assim da pra mandar link com a dificuldade certa
-
-  const {
-    board,
-    opened,
-    openCell,
-    resetGame,
-    marked,
-    handleMarkCell,
-    win,
-    isEndGame,
-    timeLeft,
-    usedTime,
-  } = useBoard(dificulty)
-  const { min, seconds } = formatTimeMinSeconds(timeLeft)
-
-  const colsClass: Record<number, string> = {
-    5: "grid-cols-5",
-    7: "grid-cols-[repeat(7,minmax(0,1fr))]",
-    9: "grid-cols-[repeat(9,minmax(0,1fr))]",
-  }
-  const colClass = colsClass[board.length] ?? 5
-  const handleBoardContextMenu = (e: React.MouseEvent) => {
-    e.preventDefault() // bloqueia menu direito global
-  }
-
+export function BoardView({
+  board,
+  resetGame,
+  win,
+  opened,
+  marked,
+  handleMarkCell,
+  handleBoardContextMenu,
+  min,
+  seconds,
+  usedTime,
+  openCell,
+  isEndGame,
+  colClass,
+  setDificulty,
+}: BoardViewProps) {
   return (
     <main className="flex flex-col mx-auto gap-4  items-center justify-center">
       <div className="flex flex-col w-full justify-center items-center gap-2">

@@ -1,6 +1,5 @@
-"use client"
-import { Board } from "./components/board"
-import { ChangeVolume } from "./components/changeVolume"
+import { Board } from "../components/board"
+import { ChangeVolume } from "../components/changeVolume"
 
 export default function Home() {
   return (
