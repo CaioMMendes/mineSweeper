@@ -1,22 +1,9 @@
-"use client"
+"use-client"
 
-import { BombIcon } from "../icons/bomb"
-import { FlagIcon } from "../icons/flag"
+import { BombIcon } from "@/app/icons/bomb"
+import { CellViewProps } from "./cell.types"
 import { motion } from "framer-motion"
-
-type CellType = {
-  value: number
-  i: number
-  j: number
-}
-
-interface CellProps {
-  cell: CellType
-  isOpened: boolean
-  isMarked: boolean
-  openCell: (coord: number[]) => void
-  handleMarkCell: ([i, j]: number[]) => void
-}
+import { FlagIcon } from "@/app/icons/flag"
 
 const numberColors: Record<number, string> = {
   1: "text-blue-600",
@@ -43,17 +30,13 @@ const backgroundColors: Record<number, string> = {
   [-1]: "bg-red-900",
 }
 
-export function Cell({
-  cell,
+export function CellView({
   isOpened,
-  isMarked,
-  openCell,
+  cell,
   handleMarkCell,
-}: CellProps) {
-  function handleClick() {
-    if (!isMarked) openCell([cell.i, cell.j])
-  }
-
+  isMarked,
+  handleClick,
+}: CellViewProps) {
   if (isOpened) {
     return (
       <motion.div
@@ -83,7 +66,7 @@ export function Cell({
   return (
     <div>
       <button
-        onClick={() => handleClick()}
+        onClick={handleClick}
         onContextMenu={(e) => {
           e.preventDefault() // impede o menu do navegador
           handleMarkCell([cell.i, cell.j])
