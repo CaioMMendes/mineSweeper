@@ -1,3 +1,4 @@
+"use-client"
 import { Modal } from "../modal"
 import { LoseModalViewProps } from "./loseModal.types"
 
