@@ -1,3 +1,5 @@
+"use-client"
+
 import { Modal } from "../modal"
 import { VictoryModalViewProps } from "./victoryModal.types"
 
