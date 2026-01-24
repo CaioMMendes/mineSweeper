@@ -1,14 +1,17 @@
 import { useState } from "react"
-import { BoardDifficulty, useBoard } from "../hooks/useBoard"
+import { useBoard } from "../hooks/useBoard/useBoard"
 import { cn } from "../utils/cn"
 import { Button } from "./button"
 import { Cell } from "./cell"
 import { LoseModal } from "./loseModal"
 import { VictoryModal } from "./victoryModal"
 import { formatTimeMinSeconds } from "../utils/formatTimeMinSeconds"
+import { BoardDifficulty } from "../hooks/useBoard/types/boardTypes"
 
 export function Board() {
   const [dificulty, setDificulty] = useState<BoardDifficulty>("medium")
+
+  //todo colocar para pegar a dificuldade pela url, assim da pra mandar link com a dificuldade certa
 
   const {
     board,
@@ -55,7 +58,7 @@ export function Board() {
       <div
         className={cn(
           `grid ${colClass} w-fit mx-auto gap-0 p-0 bg-zinc-900 ring-1 ring-zinc-700 mt-5 rounded-sm overflow-hidden`,
-          win && "pointer-events-none"
+          win && "pointer-events-none",
         )}
         onContextMenu={handleBoardContextMenu}
       >

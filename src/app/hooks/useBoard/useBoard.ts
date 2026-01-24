@@ -1,45 +1,19 @@
-import {
-  Dispatch,
-  RefObject,
-  SetStateAction,
-  useEffect,
-  useEffectEvent,
-  useRef,
-  useState,
-} from "react"
-import { useTimer } from "./useTimer"
-
-export type BoardDifficulty = "easy" | "medium" | "hard"
-
-const boardStats = {
-  "easy": {
-    numberOfBombs: 4,
-    size: 5,
-    time: 120,
-  },
-  "medium": {
-    numberOfBombs: 8,
-    size: 7,
-    time: 300,
-  },
-  "hard": {
-    numberOfBombs: 15,
-    size: 9,
-    time: 480,
-  },
-  "test": {
-    numberOfBombs: 2,
-    size: 9,
-    time: 5,
-  },
-}
+import { useEffect, useEffectEvent, useRef, useState } from "react"
+import { useTimer } from "../useTimer"
+import { checkWin } from "./functions/checkWin"
+import { generateBoard } from "./functions/generateBoard"
+import { generateEmptyBoard } from "./functions/generateEmptyBoard"
+import { generateMarkedCells } from "./functions/generateMarkedCells"
+import { generateOpenedCells } from "./functions/generateOpenedCells"
+import { boardStats } from "./constants/boardStats"
+import { BoardDifficulty } from "./types/boardTypes"
 
 export function useBoard(difficulty: BoardDifficulty) {
   const { resetTimer, startTimer, timeLeft, pauseTimer, usedTime } = useTimer(
-    boardStats[difficulty].time
+    boardStats[difficulty].time,
   )
   const [board, setBoard] = useState(() =>
-    generateEmptyBord(boardStats[difficulty].size)
+    generateEmptyBoard(boardStats[difficulty].size),
   )
   const firstClick = useRef<number[] | null>(null)
   const [shouldGenerateBoard, setShouldGenerateBoard] = useState(true)
@@ -94,7 +68,7 @@ export function useBoard(difficulty: BoardDifficulty) {
         openedCount,
         setIsEndGame,
         setWin,
-        pauseTimer
+        pauseTimer,
       )
 
       if (board[i][j] !== 0) return
@@ -116,7 +90,7 @@ export function useBoard(difficulty: BoardDifficulty) {
     setOpened(generateOpenedCells(difficulty))
     setMarked(generateMarkedCells(difficulty))
     setShouldGenerateBoard(true)
-    setBoard(generateEmptyBord(boardStats[difficulty].size))
+    setBoard(generateEmptyBoard(boardStats[difficulty].size))
     // setBoard(generateBoard(difficulty))
     resetTimer()
 
@@ -184,112 +158,5 @@ export function useBoard(difficulty: BoardDifficulty) {
     gameOver,
     timeLeft,
     usedTime,
-  }
-}
-
-function generateEmptyBord(size: number) {
-  const board: number[][] = []
-  for (let i = 0; i < size; i++) {
-    const array = []
-    for (let j = 0; j < size; j++) {
-      array.push(0)
-    }
-    board.push(array)
-  }
-  return board
-}
-
-function generateBoard(difficulty: BoardDifficulty, coord: number[]) {
-  const { numberOfBombs, size } = boardStats[difficulty]
-
-  const board = generateEmptyBord(size)
-
-  let count = 0
-  while (count < numberOfBombs) {
-    const [x, y] = randomCoordenate(size)
-    if (board[x][y] === -1 || isOnFirstClickRange([x, y], coord)) continue
-
-    board[x][y] = -1
-    count++
-  }
-
-  for (let i = 0; i < size; i++) {
-    for (let j = 0; j < size; j++) {
-      if (board[i][j] === -1) continue
-
-      const topMiddle = board?.[i + 1]?.[j] === -1 ? 1 : 0
-      const topLeft = board?.[i + 1]?.[j - 1] === -1 ? 1 : 0
-      const topRight = board?.[i + 1]?.[j + 1] === -1 ? 1 : 0
-      const left = board?.[i]?.[j - 1] === -1 ? 1 : 0
-      const right = board?.[i]?.[j + 1] === -1 ? 1 : 0
-      const bottomMiddle = board?.[i - 1]?.[j] === -1 ? 1 : 0
-      const bottomLeft = board?.[i - 1]?.[j - 1] === -1 ? 1 : 0
-      const bottomRight = board?.[i - 1]?.[j + 1] === -1 ? 1 : 0
-
-      const count =
-        topMiddle +
-        topLeft +
-        topRight +
-        left +
-        right +
-        bottomLeft +
-        bottomMiddle +
-        bottomRight
-
-      board[i][j] = count
-    }
-  }
-
-  return board
-}
-
-function randomCoordenate(size: number) {
-  const randomX = Math.floor(Math.random() * size)
-  const randomY = Math.floor(Math.random() * size)
-  return [randomX, randomY]
-}
-
-function generateOpenedCells(difficulty: BoardDifficulty) {
-  const { size } = boardStats[difficulty]
-  const openList: Record<string, boolean> = {}
-
-  for (let i = 0; i < size; i++) {
-    for (let j = 0; j < size; j++) {
-      openList[`${i}-${j}`] = false
-    }
-  }
-  return openList
-}
-
-function isOnFirstClickRange(cell: number[], coord: number[]) {
-  return Math.abs(cell[0] - coord[0]) <= 1 && Math.abs(cell[1] - coord[1]) <= 1
-}
-
-function generateMarkedCells(difficulty: BoardDifficulty) {
-  const { size } = boardStats[difficulty]
-  const markedList: Record<string, boolean> = {}
-
-  for (let i = 0; i < size; i++) {
-    for (let j = 0; j < size; j++) {
-      markedList[`${i}-${j}`] = false
-    }
-  }
-
-  return markedList
-}
-
-function checkWin(
-  numberOfBombs: number,
-  size: number,
-  openedCount: RefObject<number>,
-  setIsEndGame: Dispatch<SetStateAction<boolean>>,
-  setWin: Dispatch<SetStateAction<boolean | null>>,
-  pauseTimer: () => void
-) {
-  if (numberOfBombs === size ** 2 - openedCount.current) {
-    setIsEndGame(true)
-    setWin(true)
-    pauseTimer()
-    return
   }
 }
