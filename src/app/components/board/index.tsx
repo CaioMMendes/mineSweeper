@@ -1,3 +1,5 @@
+"use client"
+
 import { useBoardModel } from "./board.model"
 import { BoardView } from "./board.view"
 

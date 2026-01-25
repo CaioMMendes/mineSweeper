@@ -1,3 +1,5 @@
+"use client"
+
 import { useEffect, useEffectEvent, useRef, useState } from "react"
 import { useTimer } from "../useTimer"
 import { checkWin } from "./functions/checkWin"

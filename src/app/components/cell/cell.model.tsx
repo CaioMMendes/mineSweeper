@@ -1,3 +1,5 @@
+"use client"
+
 import { UseCellModelProps } from "./cell.types"
 
 export function useCellModel({ isMarked, openCell, cell }: UseCellModelProps) {

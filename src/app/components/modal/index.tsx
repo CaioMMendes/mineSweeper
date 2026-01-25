@@ -1,3 +1,5 @@
+"use client"
+
 import { useModalModel } from "./modal.model"
 import { ModalProps } from "./modal.types"
 import { ModalView } from "./modal.view"

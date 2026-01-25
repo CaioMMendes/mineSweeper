@@ -1,3 +1,5 @@
+"use client"
+
 import { useChangeVolumeModel } from "./changeVolume.model"
 import { ChangeVolumeView } from "./changeVolume.view"
 

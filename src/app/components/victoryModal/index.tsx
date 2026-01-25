@@ -1,3 +1,5 @@
+"use client"
+
 import { useVictoryModalModel } from "./victoryModal.model"
 import { VictoryModalProps } from "./victoryModal.types"
 import { VictoryModalView } from "./victoryModal.view"

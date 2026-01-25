@@ -1,3 +1,5 @@
+"use client"
+
 import { useLoseModalModel } from "./loseModal.model"
 import { LoseModalProps } from "./loseModal.types"
 import { LoseModalView } from "./loseModal.view"
