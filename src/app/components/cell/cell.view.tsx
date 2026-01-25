@@ -4,6 +4,7 @@ import { BombIcon } from "@/app/icons/bomb"
 import { CellViewProps } from "./cell.types"
 import { motion } from "framer-motion"
 import { FlagIcon } from "@/app/icons/flag"
+import { cn } from "@/app/utils/cn"
 
 const numberColors: Record<number, string> = {
   1: "text-blue-600",
@@ -36,6 +37,8 @@ export function CellView({
   handleMarkCell,
   isMarked,
   handleClick,
+  canOpenNumberCell,
+  openNumberCell,
 }: CellViewProps) {
   if (isOpened) {
     return (
@@ -50,14 +53,22 @@ export function CellView({
         {cell.value === -1 ? (
           <BombIcon width={20} height={20} />
         ) : (
-          <p
-            className={`text-center flex items-center justify-center h-full font-medium ${
-              numberColors[cell.value] || "text-zinc-50"
-            }
-              `}
+          <button
+            className={cn(
+              `text-center flex items-center justify-center h-full font-medium w-full`,
+              numberColors[cell.value] || "text-zinc-50",
+              cell.value === 0 && "pointer-events-none", // só desabilita se for 0
+              canOpenNumberCell && "cursor-pointer",
+            )}
+            onClick={() => {
+              // Só verifica se pode abrir quando o usuário clica
+              if (canOpenNumberCell) {
+                openNumberCell([cell.i, cell.j])
+              }
+            }}
           >
             {cell.value === 0 ? "" : cell.value}
-          </p>
+          </button>
         )}
       </motion.div>
     )

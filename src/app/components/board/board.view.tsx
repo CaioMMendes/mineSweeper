@@ -22,6 +22,8 @@ export function BoardView({
   isEndGame,
   colClass,
   setDificulty,
+  checkCanOpenNumberCell,
+  openNumberCell,
 }: BoardViewProps) {
   return (
     <main className="flex flex-col mx-auto gap-4  items-center justify-center">
@@ -44,7 +46,7 @@ export function BoardView({
       <div
         className={cn(
           `grid ${colClass} w-fit mx-auto gap-0 p-0 bg-zinc-900 ring-1 ring-zinc-700 mt-5 rounded-sm overflow-hidden`,
-          win && "pointer-events-none",
+          (win || isEndGame) && "pointer-events-none",
         )}
         onContextMenu={handleBoardContextMenu}
       >
@@ -58,6 +60,8 @@ export function BoardView({
                 isMarked={marked[`${i}-${j}`]}
                 handleMarkCell={handleMarkCell}
                 openCell={openCell}
+                checkCanOpenNumberCell={checkCanOpenNumberCell}
+                openNumberCell={openNumberCell}
               />
             )
           })

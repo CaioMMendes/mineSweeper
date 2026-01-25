@@ -19,6 +19,8 @@ export function useBoardModel() {
     isEndGame,
     timeLeft,
     usedTime,
+    checkCanOpenNumberCell,
+    openNumberCell,
   } = useBoard(dificulty)
   const { min, seconds } = formatTimeMinSeconds(timeLeft)
 
@@ -48,5 +50,7 @@ export function useBoardModel() {
     colClass,
     handleBoardContextMenu,
     setDificulty,
+    checkCanOpenNumberCell,
+    openNumberCell,
   }
 }

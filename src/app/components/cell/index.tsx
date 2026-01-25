@@ -8,8 +8,15 @@ export function Cell({
   isMarked,
   openCell,
   handleMarkCell,
+  checkCanOpenNumberCell,
+  openNumberCell,
 }: CellProps) {
-  const { handleClick } = useCellModel({ isMarked, openCell, cell })
+  const { handleClick, canOpenNumberCell } = useCellModel({
+    isMarked,
+    openCell,
+    cell,
+    checkCanOpenNumberCell,
+  })
 
   return (
     <CellView
@@ -19,6 +26,8 @@ export function Cell({
       isOpened={isOpened}
       openCell={openCell}
       handleClick={handleClick}
+      canOpenNumberCell={canOpenNumberCell}
+      openNumberCell={openNumberCell}
     />
   )
 }
