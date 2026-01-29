@@ -99,11 +99,26 @@ export function useBoard(difficulty: BoardDifficulty) {
     const numberOfFlags = countNumberOfFlagsRounding(coord, marked)
     const cellsOpened = countNumberOfOpenedCellsRounding(coord, opened)
 
-    if (cellsOpened + numberOfFlags === 8) return false
+    // Conta quantos vizinhos VÁLIDOS esta célula tem (dentro do tabuleiro)
+    const neighbors = [
+      [x + 1, y],
+      [x - 1, y],
+      [x + 1, y - 1],
+      [x + 1, y + 1],
+      [x - 1, y + 1],
+      [x - 1, y - 1],
+      [x, y - 1],
+      [x, y + 1],
+    ]
+
+    const validNeighborsCount = neighbors.filter(
+      ([nx, ny]) => nx >= 0 && nx < stats.size && ny >= 0 && ny < stats.size,
+    ).length
+
+    // Se todas as células vizinhas válidas estão abertas ou marcadas, não pode abrir
+    if (cellsOpened + numberOfFlags === validNeighborsCount) return false
 
     if (cellValue === numberOfFlags && cellValue !== 0) return true
-
-    //todo se o numero de flags
 
     return false
   }
@@ -115,41 +130,74 @@ export function useBoard(difficulty: BoardDifficulty) {
     // Se o número de bandeiras não corresponde ao valor, não faz nada
     if (cellValue !== numberOfFlags) return
 
-    const visited = new Set<string>()
-    const cellsToOpen = new Set<string>() // NOVA: coleta células
+    const allCellsToOpen = new Set<string>()
     const stopRef = { current: false }
 
-    // Abrir células vizinhas NÃO marcadas
-    const neighbors = [
-      [i + 1, j],
-      [i - 1, j],
-      [i + 1, j - 1],
-      [i + 1, j + 1],
-      [i - 1, j + 1],
-      [i - 1, j - 1],
-      [i, j - 1],
-      [i, j + 1],
-    ]
+    // Fila de células para processar propagação
+    const queue: number[][] = [[i, j]]
+    const processedCells = new Set<string>()
 
-    neighbors.forEach(([x, y]) => {
-      const key = `${x}-${y}`
-      // Só abre se NÃO estiver marcada e NÃO estiver aberta
-      if (!marked[key] && !opened[key]) {
-        open([x, y], visited, cellsToOpen, stopRef)
-      }
-    })
+    while (queue.length > 0 && !stopRef.current) {
+      const [x, y] = queue.shift()!
+      const currentKey = `${x}-${y}`
+
+      // Evita processar a mesma célula duas vezes
+      if (processedCells.has(currentKey)) continue
+      processedCells.add(currentKey)
+
+      const currentValue = board[x][y]
+      const currentFlags = countNumberOfFlagsRounding([x, y], marked)
+
+      // Verifica se esta célula deve propagar
+      if (currentValue !== currentFlags || currentValue === 0) continue
+
+      const neighbors = [
+        [x + 1, y],
+        [x - 1, y],
+        [x + 1, y - 1],
+        [x + 1, y + 1],
+        [x - 1, y + 1],
+        [x - 1, y - 1],
+        [x, y - 1],
+        [x, y + 1],
+      ]
+
+      neighbors.forEach(([nx, ny]) => {
+        const key = `${nx}-${ny}`
+
+        // Só abre se NÃO estiver marcada e NÃO estiver aberta
+        if (!marked[key] && !opened[key] && !allCellsToOpen.has(key)) {
+          const localVisited = new Set<string>()
+          const localCellsToOpen = new Set<string>()
+
+          open([nx, ny], localVisited, localCellsToOpen, stopRef)
+
+          // Adiciona as células abertas ao conjunto global
+          localCellsToOpen.forEach((cell) => allCellsToOpen.add(cell))
+
+          // Se a célula aberta é um número > 0, adiciona na fila para processar
+          if (
+            !stopRef.current &&
+            board[nx]?.[ny] !== undefined &&
+            board[nx][ny] > 0
+          ) {
+            queue.push([nx, ny])
+          }
+        }
+      })
+    }
 
     // Atualiza tudo de uma vez só!
-    if (cellsToOpen.size > 0 && !stopRef.current) {
+    if (allCellsToOpen.size > 0 && !stopRef.current) {
       setOpened((o) => {
         const newOpened = { ...o }
-        cellsToOpen.forEach((key) => {
+        allCellsToOpen.forEach((key) => {
           newOpened[key] = true
         })
         return newOpened
       })
 
-      openedCount.current += cellsToOpen.size
+      openedCount.current += allCellsToOpen.size
 
       checkWin(
         stats.numberOfBombs,
@@ -161,6 +209,60 @@ export function useBoard(difficulty: BoardDifficulty) {
       )
     }
   }
+
+  // function openNumberCell([i, j]: number[]) {
+  //   const cellValue = board[i][j]
+  //   const numberOfFlags = countNumberOfFlagsRounding([i, j], marked)
+
+  //   // Se o número de bandeiras não corresponde ao valor, não faz nada
+  //   if (cellValue !== numberOfFlags) return
+
+  //   const visited = new Set<string>()
+  //   const cellsToOpen = new Set<string>() // NOVA: coleta células
+  //   const stopRef = { current: false }
+
+  //   // Abrir células vizinhas NÃO marcadas
+  //   const neighbors = [
+  //     [i + 1, j],
+  //     [i - 1, j],
+  //     [i + 1, j - 1],
+  //     [i + 1, j + 1],
+  //     [i - 1, j + 1],
+  //     [i - 1, j - 1],
+  //     [i, j - 1],
+  //     [i, j + 1],
+  //   ]
+
+  //   neighbors.forEach(([x, y]) => {
+  //     const key = `${x}-${y}`
+  //     // Só abre se NÃO estiver marcada e NÃO estiver aberta
+  //     if (!marked[key] && !opened[key]) {
+  //       open([x, y], visited, cellsToOpen, stopRef)
+  //     }
+  //   })
+
+  //   // Atualiza tudo de uma vez só!
+  //   if (cellsToOpen.size > 0 && !stopRef.current) {
+  //     setOpened((o) => {
+  //       const newOpened = { ...o }
+  //       cellsToOpen.forEach((key) => {
+  //         newOpened[key] = true
+  //       })
+  //       return newOpened
+  //     })
+
+  //     openedCount.current += cellsToOpen.size
+
+  //     checkWin(
+  //       stats.numberOfBombs,
+  //       stats.size,
+  //       openedCount,
+  //       setIsEndGame,
+  //       setWin,
+  //       pauseTimer,
+  //     )
+  //   }
+  // }
 
   function openCell(coord: number[]) {
     const [x, y] = coord

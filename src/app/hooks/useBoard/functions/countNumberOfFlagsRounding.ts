@@ -6,14 +6,14 @@ export function countNumberOfFlagsRounding(
 
   const [i, j] = coord
 
-  if (marked[`${i + 1}-${j}`]) count++
-  if (marked[`${i - 1}-${j}`]) count++
-  if (marked[`${i + 1}-${j - 1}`]) count++
-  if (marked[`${i + 1}-${j + 1}`]) count++
-  if (marked[`${i - 1}-${j + 1}`]) count++
-  if (marked[`${i - 1}-${j - 1}`]) count++
-  if (marked[`${i}-${j - 1}`]) count++
-  if (marked[`${i}-${j + 1}`]) count++
+  if (!!marked[`${i + 1}-${j}`]) count++
+  if (!!marked[`${i - 1}-${j}`]) count++
+  if (!!marked[`${i + 1}-${j - 1}`]) count++
+  if (!!marked[`${i + 1}-${j + 1}`]) count++
+  if (!!marked[`${i - 1}-${j + 1}`]) count++
+  if (!!marked[`${i - 1}-${j - 1}`]) count++
+  if (!!marked[`${i}-${j - 1}`]) count++
+  if (!!marked[`${i}-${j + 1}`]) count++
 
   return count
 }
