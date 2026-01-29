@@ -9,13 +9,16 @@ export function Cell({
   openCell,
   handleMarkCell,
   checkCanOpenNumberCell,
+  checkCanMarkRoundCells,
   openNumberCell,
+  markRoundCells,
 }: CellProps) {
-  const { handleClick, canOpenNumberCell } = useCellModel({
+  const { handleClick, canOpenNumberCell, canMarkRoundCells } = useCellModel({
     isMarked,
     openCell,
     cell,
     checkCanOpenNumberCell,
+    checkCanMarkRoundCells,
   })
 
   return (
@@ -28,6 +31,8 @@ export function Cell({
       handleClick={handleClick}
       canOpenNumberCell={canOpenNumberCell}
       openNumberCell={openNumberCell}
+      canMarkRoundCells={canMarkRoundCells}
+      markRoundCells={markRoundCells}
     />
   )
 }

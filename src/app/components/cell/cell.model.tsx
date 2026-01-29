@@ -7,16 +7,18 @@ export function useCellModel({
   openCell,
   cell,
   checkCanOpenNumberCell,
+  checkCanMarkRoundCells,
 }: UseCellModelProps) {
   function handleClick() {
-    //todo tem que ver se tem
     if (!isMarked) openCell([cell.i, cell.j])
   }
 
   const canOpenNumberCell = checkCanOpenNumberCell([cell.i, cell.j])
+  const canMarkRoundCells = checkCanMarkRoundCells([cell.i, cell.j])
 
   return {
     handleClick,
     canOpenNumberCell,
+    canMarkRoundCells,
   }
 }

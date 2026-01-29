@@ -11,16 +11,19 @@ export function useBoardModel() {
   const {
     board,
     opened,
-    openCell,
-    resetGame,
     marked,
-    handleMarkCell,
     win,
     isEndGame,
     timeLeft,
     usedTime,
+    stats,
+    openCell,
+    resetGame,
+    handleMarkCell,
     checkCanOpenNumberCell,
     openNumberCell,
+    checkCanMarkRoundCells,
+    markRoundCells,
   } = useBoard(dificulty)
   const { min, seconds } = formatTimeMinSeconds(timeLeft)
 
@@ -34,13 +37,13 @@ export function useBoardModel() {
     e.preventDefault() // bloqueia menu direito global
   }
 
+  const numberOfMarked = Object.values(marked).filter((val) => val).length
+  const bombsLeft = stats.numberOfBombs - numberOfMarked
+
   return {
     board,
     opened,
-    openCell,
-    resetGame,
     marked,
-    handleMarkCell,
     win,
     isEndGame,
     timeLeft,
@@ -48,9 +51,15 @@ export function useBoardModel() {
     min,
     seconds,
     colClass,
+    bombsLeft,
+    openCell,
+    resetGame,
+    handleMarkCell,
     handleBoardContextMenu,
     setDificulty,
     checkCanOpenNumberCell,
     openNumberCell,
+    checkCanMarkRoundCells,
+    markRoundCells,
   }
 }

@@ -11,6 +11,7 @@ import { boardStats } from "./constants/boardStats"
 import { BoardDifficulty } from "./types/boardTypes"
 import { countNumberOfFlagsRounding } from "./functions/countNumberOfFlagsRounding"
 import { countNumberOfOpenedCellsRounding } from "./functions/countNumberOfOpenedCellsRounding"
+import { countNumberOfHideCellsRounding } from "./functions/countNumberOfHideCellsRounding"
 
 export function useBoard(difficulty: BoardDifficulty) {
   const { resetTimer, startTimer, timeLeft, pauseTimer, usedTime } = useTimer(
@@ -28,6 +29,60 @@ export function useBoard(difficulty: BoardDifficulty) {
   const openedCount = useRef(0)
 
   const stats = boardStats[difficulty]
+
+  //todo quando ta em um nivel e vai pra outro e completa instantaneo marca o tempo que tava no outro
+
+  //todo ver se da pra propagar a parada de abrir
+
+  function checkCanMarkRoundCells(coord: number[]) {
+    const [x, y] = coord
+    const key = `${x}-${y}`
+
+    if (!opened[key]) return false
+
+    //se tiver aberto e o numero de celulas em volta que não estão abertas for igual ao numero, da pra marcar todas
+    const cellValue = board[x][y]
+    const numberOfFlagsRounding = countNumberOfFlagsRounding(coord, marked)
+    const numberOfHideCellsRounding = countNumberOfHideCellsRounding(
+      coord,
+      opened,
+      stats.size,
+    )
+
+    if (cellValue === numberOfFlagsRounding) return false
+    if (cellValue === 0) return false
+    return cellValue === numberOfHideCellsRounding
+  }
+
+  function markRoundCells(coord: number[]) {
+    const [x, y] = coord
+    const size = stats.size
+
+    const neighbors = [
+      [x + 1, y],
+      [x - 1, y],
+      [x + 1, y - 1],
+      [x + 1, y + 1],
+      [x - 1, y + 1],
+      [x - 1, y - 1],
+      [x, y - 1],
+      [x, y + 1],
+    ]
+
+    neighbors.forEach(([x, y]) => {
+      const key = `${x}-${y}`
+      if (
+        x >= 0 &&
+        x < size &&
+        y >= 0 &&
+        y < size &&
+        !marked[key] &&
+        !opened[key]
+      ) {
+        handleMarkCell([x, y])
+      }
+    })
+  }
 
   function checkCanOpenNumberCell(coord: number[]) {
     const [x, y] = coord
@@ -169,7 +224,7 @@ export function useBoard(difficulty: BoardDifficulty) {
 
   function openFromCoord([i, j]: number[]) {
     const visited = new Set<string>()
-    const cellsToOpen = new Set<string>() // NOVA: coleta células
+    const cellsToOpen = new Set<string>()
     const stopRef = { current: false }
 
     open([i, j], visited, cellsToOpen, stopRef)
@@ -212,8 +267,9 @@ export function useBoard(difficulty: BoardDifficulty) {
   }
 
   function handleMarkCell([i, j]: number[]) {
+    const key = `${i}-${j}`
     setMarked((marked) => {
-      return { ...marked, [`${i}-${j}`]: !marked[`${i}-${j}`] }
+      return { ...marked, [key]: !marked[key] }
     })
   }
 
@@ -260,16 +316,19 @@ export function useBoard(difficulty: BoardDifficulty) {
   return {
     board,
     opened,
-    openCell,
+    stats,
     isEndGame,
-    resetGame,
     marked,
-    handleMarkCell,
     win,
-    gameOver,
     timeLeft,
     usedTime,
+    openCell,
+    resetGame,
+    handleMarkCell,
+    gameOver,
     checkCanOpenNumberCell,
     openNumberCell,
+    checkCanMarkRoundCells,
+    markRoundCells,
   }
 }

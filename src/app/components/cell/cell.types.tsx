@@ -12,7 +12,9 @@ export type CellViewProps = {
   handleMarkCell: ([i, j]: number[]) => void
   handleClick: () => void
   canOpenNumberCell: boolean
+  canMarkRoundCells: boolean
   openNumberCell: ([i, j]: number[]) => void
+  markRoundCells: (coord: number[]) => void
 }
 
 export type UseCellModelProps = {
@@ -20,6 +22,7 @@ export type UseCellModelProps = {
   isMarked: boolean
   openCell: (coord: number[]) => void
   checkCanOpenNumberCell: (coord: number[]) => boolean
+  checkCanMarkRoundCells: (coord: number[]) => boolean
 }
 
 export type CellProps = {
@@ -30,4 +33,6 @@ export type CellProps = {
   handleMarkCell: ([i, j]: number[]) => void
   checkCanOpenNumberCell: (coord: number[]) => boolean
   openNumberCell: ([i, j]: number[]) => void
+  markRoundCells: (coord: number[]) => void
+  checkCanMarkRoundCells: (coord: number[]) => boolean
 }

@@ -39,6 +39,8 @@ export function CellView({
   handleClick,
   canOpenNumberCell,
   openNumberCell,
+  canMarkRoundCells,
+  markRoundCells,
 }: CellViewProps) {
   if (isOpened) {
     return (
@@ -58,12 +60,18 @@ export function CellView({
               `text-center flex items-center justify-center h-full font-medium w-full`,
               numberColors[cell.value] || "text-zinc-50",
               cell.value === 0 && "pointer-events-none", // só desabilita se for 0
-              canOpenNumberCell && "cursor-pointer",
+              (canOpenNumberCell || canMarkRoundCells) && "cursor-pointer",
             )}
             onClick={() => {
               // Só verifica se pode abrir quando o usuário clica
               if (canOpenNumberCell) {
                 openNumberCell([cell.i, cell.j])
+              }
+            }}
+            onContextMenu={(e) => {
+              e.preventDefault() // impede o menu do navegador
+              if (canMarkRoundCells) {
+                markRoundCells([cell.i, cell.j])
               }
             }}
           >

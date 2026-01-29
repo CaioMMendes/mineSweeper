@@ -13,6 +13,7 @@ export function BoardView({
   win,
   opened,
   marked,
+  bombsLeft,
   handleMarkCell,
   handleBoardContextMenu,
   min,
@@ -24,6 +25,8 @@ export function BoardView({
   setDificulty,
   checkCanOpenNumberCell,
   openNumberCell,
+  checkCanMarkRoundCells,
+  markRoundCells,
 }: BoardViewProps) {
   return (
     <main className="flex flex-col mx-auto gap-4  items-center justify-center">
@@ -38,14 +41,20 @@ export function BoardView({
       <div className="flex w-full justify-center">
         <Button onClick={resetGame}>Reiniciar</Button>
       </div>
+      <div className="flex flex-col gap-2 justify-center">
+        <div className="flex justify-center">
+          <p>{min}</p>:
+          <p className="min-w-6">{seconds < 10 ? `0${seconds}` : seconds}</p>
+        </div>
 
-      <div className="flex">
-        <p>{min}</p>:
-        <p className="min-w-6">{seconds < 10 ? `0${seconds}` : seconds}</p>
+        <div>
+          Restam {bombsLeft} Bomba
+          {bombsLeft === 1 || bombsLeft === -1 ? "" : "s"}
+        </div>
       </div>
       <div
         className={cn(
-          `grid ${colClass} w-fit mx-auto gap-0 p-0 bg-zinc-900 ring-1 ring-zinc-700 mt-5 rounded-sm overflow-hidden`,
+          `grid ${colClass} w-fit mx-auto gap-0 p-0 bg-zinc-900 ring-1 ring-zinc-700 mt-3 rounded-sm overflow-hidden`,
           (win || isEndGame) && "pointer-events-none",
         )}
         onContextMenu={handleBoardContextMenu}
@@ -62,6 +71,8 @@ export function BoardView({
                 openCell={openCell}
                 checkCanOpenNumberCell={checkCanOpenNumberCell}
                 openNumberCell={openNumberCell}
+                checkCanMarkRoundCells={checkCanMarkRoundCells}
+                markRoundCells={markRoundCells}
               />
             )
           })
