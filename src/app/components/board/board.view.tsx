@@ -6,6 +6,7 @@ import { Cell } from "../cell"
 import { LoseModal } from "../loseModal"
 import { VictoryModal } from "../victoryModal"
 import { BoardViewProps } from "./board.types"
+import { redirect } from "next/navigation"
 
 export function BoardView({
   board,
@@ -22,7 +23,6 @@ export function BoardView({
   openCell,
   isEndGame,
   colClass,
-  setDificulty,
   checkCanOpenNumberCell,
   openNumberCell,
   checkCanMarkRoundCells,
@@ -33,9 +33,9 @@ export function BoardView({
       <div className="flex flex-col w-full justify-center items-center gap-2">
         <p className="text-lg font-medium"> Dificuldade</p>
         <div className="flex gap-2 items-center">
-          <Button onClick={() => setDificulty("easy")}>Fácil</Button>
-          <Button onClick={() => setDificulty("medium")}>Médio</Button>
-          <Button onClick={() => setDificulty("hard")}>Difícil</Button>
+          <Button onClick={() => redirect("/easy")}>Fácil</Button>
+          <Button onClick={() => redirect("/medium")}>Médio</Button>
+          <Button onClick={() => redirect("/hard")}>Difícil</Button>
         </div>
       </div>
       <div className="flex w-full justify-center">

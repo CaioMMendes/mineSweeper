@@ -1,11 +1,8 @@
 import { BoardDifficulty } from "@/app/hooks/useBoard/types/boardTypes"
 import { useBoard } from "@/app/hooks/useBoard/useBoard"
 import { formatTimeMinSeconds } from "@/app/utils/formatTimeMinSeconds"
-import { useState } from "react"
 
-export function useBoardModel() {
-  const [dificulty, setDificulty] = useState<BoardDifficulty>("medium")
-
+export function useBoardModel(difficulty: BoardDifficulty) {
   //todo colocar para pegar a dificuldade pela url, assim da pra mandar link com a dificuldade certa
 
   const {
@@ -24,7 +21,7 @@ export function useBoardModel() {
     openNumberCell,
     checkCanMarkRoundCells,
     markRoundCells,
-  } = useBoard(dificulty)
+  } = useBoard(difficulty)
   const { min, seconds } = formatTimeMinSeconds(timeLeft)
 
   const colsClass: Record<number, string> = {
@@ -56,7 +53,6 @@ export function useBoardModel() {
     resetGame,
     handleMarkCell,
     handleBoardContextMenu,
-    setDificulty,
     checkCanOpenNumberCell,
     openNumberCell,
     checkCanMarkRoundCells,
