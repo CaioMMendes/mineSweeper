@@ -1,10 +1,10 @@
+import { DifficultyType } from "@/app/components/ranking/ranking.types"
 import { prisma } from "@/lib/prisma"
-import { $Enums } from "@prisma/client"
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url)
 
-  const difficulty = searchParams.get("difficulty") as $Enums.Difficulty
+  const difficulty = searchParams.get("difficulty") as DifficultyType
   const version = searchParams.get("version")
 
   const ranking = await prisma.score.findMany({
