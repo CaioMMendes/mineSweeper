@@ -1,6 +1,6 @@
 import { RANKING_LIMIT } from "@/app/constants/rankingLimitConstant"
 import { prisma } from "@/lib/prisma"
-import { Difficulty } from "@prisma/client"
+import { $Enums } from "@prisma/client"
 
 export async function POST(req: Request) {
   const body = await req.json()
@@ -9,7 +9,7 @@ export async function POST(req: Request) {
     data: {
       playerName: body.playerName,
       timeMs: body.timeMs,
-      difficulty: body.difficulty as Difficulty,
+      difficulty: body.difficulty as $Enums.Difficulty,
       gameVersion: body.version,
     },
   })
@@ -20,7 +20,7 @@ export async function POST(req: Request) {
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url)
 
-  const difficulty = searchParams.get("difficulty") as Difficulty
+  const difficulty = searchParams.get("difficulty") as $Enums.Difficulty
   const version = searchParams.get("version")
   const limit = Number(searchParams.get("limit") ?? RANKING_LIMIT)
 

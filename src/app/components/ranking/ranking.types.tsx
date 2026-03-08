@@ -1,4 +1,4 @@
-import { Difficulty } from "@prisma/client"
+import { $Enums } from "@prisma/client"
 
 export type DifficultyTab = "easy" | "medium" | "hard"
 
@@ -16,8 +16,8 @@ export type RankingProps = {
 }
 
 // Mapeia DifficultyTab para o enum do Prisma
-export const DIFFICULTY_MAP: Record<DifficultyTab, Difficulty> = {
-  easy: Difficulty.EASY,
-  medium: Difficulty.MEDIUM,
-  hard: Difficulty.HARD,
+export const DIFFICULTY_MAP: Record<DifficultyTab, $Enums.Difficulty> = {
+  easy: $Enums.Difficulty.EASY,
+  medium: $Enums.Difficulty.MEDIUM,
+  hard: $Enums.Difficulty.HARD,
 }
