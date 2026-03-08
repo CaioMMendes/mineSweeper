@@ -14,8 +14,6 @@ export async function POST(req: Request) {
     },
   })
 
-  console.log(score)
-
   return Response.json(score)
 }
 
