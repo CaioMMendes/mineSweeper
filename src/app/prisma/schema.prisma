@@ -1,0 +1,26 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Score {
+  id          String   @id @default(uuid())
+  playerName  String
+  timeMs      Int
+
+  difficulty  Difficulty
+  gameVersion String
+
+  createdAt   DateTime @default(now())
+
+  @@index([gameVersion, difficulty, timeMs])
+}
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+}
