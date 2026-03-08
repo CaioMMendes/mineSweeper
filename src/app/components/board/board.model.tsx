@@ -3,8 +3,6 @@ import { useBoard } from "@/app/hooks/useBoard/useBoard"
 import { formatTimeMinSeconds } from "@/app/utils/formatTimeMinSeconds"
 
 export function useBoardModel(difficulty: BoardDifficulty) {
-  //todo colocar para pegar a dificuldade pela url, assim da pra mandar link com a dificuldade certa
-
   const {
     board,
     opened,
@@ -38,6 +36,7 @@ export function useBoardModel(difficulty: BoardDifficulty) {
   const bombsLeft = stats.numberOfBombs - numberOfMarked
 
   return {
+    difficulty,
     board,
     opened,
     marked,

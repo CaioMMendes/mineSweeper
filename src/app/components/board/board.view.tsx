@@ -10,6 +10,7 @@ import { redirect } from "next/navigation"
 
 export function BoardView({
   board,
+  difficulty,
   resetGame,
   win,
   opened,
@@ -33,9 +34,24 @@ export function BoardView({
       <div className="flex flex-col w-full justify-center items-center gap-2">
         <p className="text-lg font-medium"> Dificuldade</p>
         <div className="flex gap-2 items-center">
-          <Button onClick={() => redirect("/easy")}>Fácil</Button>
-          <Button onClick={() => redirect("/medium")}>Médio</Button>
-          <Button onClick={() => redirect("/hard")}>Difícil</Button>
+          <Button
+            variant={difficulty === "easy" ? "selected" : undefined}
+            onClick={() => redirect("/easy")}
+          >
+            Fácil
+          </Button>
+          <Button
+            variant={difficulty === "medium" ? "selected" : undefined}
+            onClick={() => redirect("/medium")}
+          >
+            Médio
+          </Button>
+          <Button
+            variant={difficulty === "hard" ? "selected" : undefined}
+            onClick={() => redirect("/hard")}
+          >
+            Difícil
+          </Button>
         </div>
       </div>
       <div className="flex w-full justify-center">
@@ -78,7 +94,7 @@ export function BoardView({
           })
         })}
       </div>
-      <VictoryModal win={win} usedTime={usedTime} />
+      <VictoryModal win={win} usedTime={usedTime} difficulty={difficulty} />
       <LoseModal isEndGame={isEndGame} win={win} />
     </main>
   )
