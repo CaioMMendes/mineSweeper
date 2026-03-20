@@ -94,13 +94,13 @@ export function VictoryModalView({
             <button
               onClick={handleSubmitScore}
               disabled={isSubmitting || !!nameError || playerName.trim() === ""}
-              className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-500 disabled:bg-zinc-600 disabled:cursor-not-allowed text-white rounded transition-colors font-medium"
+              className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-500 disabled:bg-zinc-600 disabled:cursor-not-allowed text-white rounded transition-colors font-medium cursor-pointer"
             >
               {isSubmitting ? "Salvando..." : "Salvar no ranking"}
             </button>
             <button
               onClick={handleClose}
-              className="px-4 py-2 bg-zinc-600 hover:bg-zinc-500 text-white rounded transition-colors"
+              className="px-4 py-2 bg-zinc-600 hover:bg-zinc-500 text-white rounded transition-colors cursor-pointer"
             >
               Pular
             </button>
@@ -114,7 +114,7 @@ export function VictoryModalView({
           </p>
           <button
             onClick={handleClose}
-            className="px-10 py-2 bg-zinc-600 hover:bg-zinc-500 text-white rounded transition-colors"
+            className="px-10 py-2 bg-zinc-600 hover:bg-zinc-500 text-white rounded transition-colors cursor-pointer"
           >
             Fechar
           </button>

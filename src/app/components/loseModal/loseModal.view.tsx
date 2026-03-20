@@ -22,7 +22,7 @@ export function LoseModalView({
 
           <button
             onClick={handleCloseLoseModal}
-            className="px-10 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
+            className="px-10 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition cursor-pointer"
           >
             Tentar novamente
           </button>
