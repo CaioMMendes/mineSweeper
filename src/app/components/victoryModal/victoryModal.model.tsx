@@ -102,6 +102,28 @@ export function useVictoryModalModel({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [victoryModalOpen])
 
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
+  const turnstileRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    // Só renderiza quando o formulário está visível e elegível
+    if (!victoryModalOpen || !isEligible || isCheckingEligibility) return
+
+    const interval = setInterval(() => {
+      if (window.turnstile && turnstileRef.current) {
+        window.turnstile.render(turnstileRef.current, {
+          sitekey: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!,
+          theme: "dark",
+          callback: (token: string) => setTurnstileToken(token),
+          "expired-callback": () => setTurnstileToken(null),
+        })
+        clearInterval(interval)
+      }
+    }, 100)
+
+    return () => clearInterval(interval)
+  }, [victoryModalOpen, isEligible, isCheckingEligibility])
+
   // ─── Handlers ─────────────────────────────────────────────────────────────
   function handleSetPlayerName(value: string) {
     const sliced = value.slice(0, MAX_NAME_LENGTH)
@@ -127,6 +149,7 @@ export function useVictoryModalModel({
           timeMs: usedTime.current,
           difficulty: difficulty.toUpperCase(),
           version: process.env.NEXT_PUBLIC_GAME_VERSION ?? "1.0.0",
+          turnstileToken,
         }),
       })
       setIsSubmitted(true)
@@ -157,5 +180,7 @@ export function useVictoryModalModel({
     isCheckingEligibility,
     playerName,
     handleClose,
+    turnstileRef,
+    turnstileToken,
   }
 }

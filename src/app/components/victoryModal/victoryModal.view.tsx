@@ -17,6 +17,8 @@ export function VictoryModalView({
   isCheckingEligibility,
   handleSetPlayerName,
   handleClose,
+  turnstileRef,
+  turnstileToken,
 }: VictoryModalViewProps) {
   if (!victoryModalOpen) return <></>
 
@@ -90,10 +92,17 @@ export function VictoryModalView({
             </div>
           </div>
 
+          <div ref={turnstileRef} />
+
           <div className="flex gap-2 mt-1">
             <button
               onClick={handleSubmitScore}
-              disabled={isSubmitting || !!nameError || playerName.trim() === ""}
+              disabled={
+                isSubmitting ||
+                !!nameError ||
+                playerName.trim() === "" ||
+                !turnstileToken
+              }
               className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-500 disabled:bg-zinc-600 disabled:cursor-not-allowed text-white rounded transition-colors font-medium cursor-pointer"
             >
               {isSubmitting ? "Salvando..." : "Salvar no ranking"}

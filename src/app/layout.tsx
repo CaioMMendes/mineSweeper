@@ -23,6 +23,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <script
+        src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+        async
+        defer
+      ></script>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
